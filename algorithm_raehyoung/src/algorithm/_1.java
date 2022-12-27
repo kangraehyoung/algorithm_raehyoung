@@ -57,7 +57,28 @@ public class _1 {
 		 * 5. 자소분리
 		 *  유니코드 한글 시작 44032, 끝 55199
 		 *  
-
+		 *  
+		 * 6. 블록체인이란 -> 합의 알고리즘 PoW, PoS, DPoS
+		 * 	  
+		 *    참조 : https://medium.com/@kimjunyong/5-%EB%B8%94%EB%A1%9D%EC%B2%B4%EC%9D%B8-%ED%95%A9%EC%9D%98-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0-1%ED%8E%B8-pow-pos-dpos-21f8e3b2c22a
+		 *          https://www.markany.com/blog/%EB%B8%94%EB%A1%9D%EC%B2%B4%EC%9D%B8-%ED%95%A9%EC%9D%98-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98/
+		 *          https://saintbinary.tistory.com/19
+		 * 	  
+		 *    블록 : 저장 단위
+		 *    체인 : 무수히 많은 블록을 연결
+		 *    
+		 *    블록체인이 체인으로 유지되기 위해 합의 알고리즘이 필요 
+		 *    합의 알고리즘 -> 다수의 참여자들이 하나의 통일된 의사결정을 하기 위해 사용하는 알고리즘
+		 *    블록체인은 트랜잭션 정보를 기록한 일종의 분산장부로써, 각 노드가 각각의 장부를 가지고 있고 이 장부의 내용은 합의 알고리즘에 의해 동일하게 유지되는 것
+		 *    
+		 *    POW : 작업증명이다. 문제를 주어주고 조건을 만족하는 답을 찾아낸 노드에게 보상하는 합의 알고리즘
+		 *    POS : PoS는 해당 블록체인에 대해 가지고 있는 지분율로 보상받게 되는 합의 방식이다. 즉 지분을 많이 가진 노드에 블록을 생성할 수 있는 권한을 부여하는 것
+		 *    DPOS : 모든 노드가 합의에 참여하는 대신 모든 노드의 투표로 선출된 노드에게 권한을 위임해 합의하도록 하는 방식이다.
+		 *    
+		 *  7. 자동완성 기능
+		 *  참조 : https://programming-tips.tistory.com/4 1편
+		 *        https://programming-tips.tistory.com/5 2편
+		 * 
 		 */
 		
 		// 자음 모음 분리 로직
@@ -82,6 +103,30 @@ public class _1 {
 //				System.out.println(uniVal + "->" + uniVal);
 //			}
 //		}
+		
+		
+		//자음 모음 분리 로직 
+		String[] ja = {"ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"};
+		String[] mo = {"ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"};
+		String[] ba = {"", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"};
+		String text = "가나다라강낭당랑";
+		
+		for (int i = 0; i < text.length(); i++) {
+			char uniVal = text.charAt(i);
+			
+			if(uniVal >= 0xAC00) {
+				System.out.println(uniVal + "->");
+				uniVal = (char)(uniVal - 0xAC00);
+				
+				char ja1 = (char)(uniVal/28/21);
+				char mo1 = (char)((uniVal)/28%21);
+				char ba1 = (char)(uniVal%28);
+				
+				System.out.println(ja[ja1] + mo[mo1] + ba[ba1]);
+			} else {
+				System.out.println(uniVal + "->" + uniVal);
+			}
+		}
 		
 		
 		
