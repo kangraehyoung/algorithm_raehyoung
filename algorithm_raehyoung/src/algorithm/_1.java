@@ -1,5 +1,10 @@
 package algorithm;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class _1 {
 
 	public static void main(String[] args) {
@@ -105,34 +110,85 @@ public class _1 {
 //		}
 		
 		
-		//자음 모음 분리 로직 
-		String[] ja = {"ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"};
-		String[] mo = {"ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ", "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ", "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ", "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ", "ㅣ"};
-		String[] ba = {"", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"};
-		String text = "가나다라강낭당랑";
 		
-		for (int i = 0; i < text.length(); i++) {
-			char uniVal = text.charAt(i);
+		/*
+		 * #자동완성 검색 기능 구현 
+		 * 
+		 * 1. 검색 시 자음, 모음, 받침 분리하여 검색되도록 컨트롤러에서 로직 구현 필요. 분리된 키워드를 문자열로 받아야함.... 로직 수정 필요
+		 *    ex) 파라미터 값 keyword를 검색하려 할 때 keyword가 자음, 모음, 받침을 분리하여 값을 넘겨서 검색되도록 하는 작업
+		 *    
+		 * 방법1
+		 * 1번의 키워드로 select문을 수행한다고 가정하면 검색될 키워드를 DB에 저장할 때 자음, 모음, 받침을 분리된 값이 들어가야 하므로
+		 * view에서 출력해줄떄 분리된 자음, 모음, 받침을 합쳐주는 로직을 추가로 작성해야한다고 생각됨.
+		 * 
+		 * 방법2 ***
+		 * 검색될 게시글을 insert할 때 테이블에 원래의 키워드와 자음, 모음, 받침이 분리된 키워드가 저장될 수 있는 컬럼을 만들어서 분리된 자음, 모음, 받침
+		 * 으로 select문을 수행 하더라고 출력될 view에서는 분리된 키워드가 아닌 원래의 키워드를 출력해주면 될것.
+		 * 
+		 * 2. 사용자가 검색한 키워드의 검색 카운트를 담을 수 있는 컬럼도 필요하다 생각됨. 자동완성 검색 기능을 사용한다고 가정했을때
+		 * 	  가장 위에 자동완성 되는 단어는 카운트가 가장 높은 키워드가 와야 하기 때문, 또 검색 시 select 뿐만 아니라 insert문도 같이 실행해서 사용자가 검색하는 단어를 수집하는 기능도 필요해보임.
+		 * 
+		 * 3. 검색될 키워드를 입력하는 input에 onchange 속성을 줘서 input 태그에 변화가 생길때마다 submit을 수행하여 그때그때
+		 * 	  상황에 맞게 자동완성 된 키워드가 뜨지않을까 생각됩니다..
+		 * 
+		 * 4. 먼저 컨트롤러 이용해서 완성되는 검색어 테스트 후 ajax로 변경예정, 검섹 테스트는 https://github.com/jhin1129/FinalProejct_VODA에 product 부분 검색 기능 수정해서 테스트 할 것
+		 * 
+		 */
+		
+		
+		// 참조 사이트 https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=xsnake&logNo=100205421762
+		
+		// ㄱ ㄲ ㄴ ㄷ ㄸ ㄹ ㅁ ㅂ ㅃ ㅅ ㅆ ㅇ ㅈ ㅉ ㅊ ㅋ ㅌ ㅍ ㅎ 
+		final char[] ja = {0x3131, 0x3132, 0x3134, 0x3137, 0x3138, 0x3139, 0x3141, 0x3142, 0x3143, 0x3145,
+				0x3146, 0x3147, 0x3148, 0x3149, 0x314a, 0x314b, 0x314c, 0x314d, 0x314e};
+		// ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ
+		final char[] mo = {0x314f, 0x3150, 0x3151, 0x3152, 0x3153, 0x3154, 0x3155, 0x3156, 0x3157, 0x3158,
+				0x3159, 0x315a, 0x315b, 0x315c, 0x315d, 0x315e, 0x315f, 0x3160,	0x3161,	0x3162,
+				0x3163};
+				// X ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ
+		final char[] ba = {0x0000, 0x3131, 0x3132, 0x3133, 0x3134, 0x3135, 0x3136, 0x3137, 0x3139, 0x313a,
+				0x313b, 0x313c, 0x313d, 0x313e, 0x313f, 0x3140, 0x3141, 0x3142, 0x3144, 0x3145,
+				0x3146, 0x3147, 0x3148, 0x314a, 0x314b, 0x314c, 0x314d, 0x314e};
+				
+			List<Map<String, Integer>> list = new ArrayList<Map<String, Integer>>();
 			
-			if(uniVal >= 0xAC00) {
-				System.out.println(uniVal + "->");
-				uniVal = (char)(uniVal - 0xAC00);
+			String tempStr = "아악악아아악아";
+			
+			System.out.println(tempStr);
+			
+			for(int i = 0 ; i < tempStr.length();i++){
+				// 리스트에 저장하기 위해 Map에 저장 후 list에 저장
+				Map<String, Integer> map = new HashMap<String, Integer>(); 
 				
-				char ja1 = (char)(uniVal/28/21);
-				char mo1 = (char)((uniVal)/28%21);
-				char ba1 = (char)(uniVal%28);
+				char test = tempStr.charAt(i);
 				
-				System.out.println(ja[ja1] + mo[mo1] + ba[ba1]);
-			} else {
-				System.out.println(uniVal + "->" + uniVal);
+				if(test >= 0xAC00){
+					char uniVal = (char) (test - 0xAC00);
+						
+					char ja1 = (char) (((uniVal - (uniVal % 28))/28)/21);
+					char mo1 = (char) (((uniVal - (uniVal % 28))/28)%21);
+					char ba1 = (char) (uniVal %28);
+						
+
+					System.out.print(ja[ja1] +""+ mo[mo1]+"");
+					
+					if((char)ba1 != 0x0000) {
+						
+					System.out.print(ba[ba1]);
+					
+					map.put("ja1", (int) ja1);
+					map.put("mo1", (int) mo1);
+					map.put("ba1", (int) ba1);
+					
+					list.add(map);
+					
+					}
+					
+				}
 			}
-		}
-		
-		
-		
-		
-	
-	
+			
+			// 실행 결과 : 아악악아아악아 ㅇㅏㅇㅏㄱㅇㅏㄱㅇㅏㅇㅏㅇㅏㄱㅇㅏ
+			// 리스트 ㅇㅏㅇㅏㄱㅇㅏㄱㅇㅏㅇㅏㅇㅏㄱㅇㅏ를 하나의 문자열로 만들어야함.
 	}
 
 }
